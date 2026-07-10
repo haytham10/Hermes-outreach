@@ -18,6 +18,14 @@ Most cold email finds a wound and twists. Haytham's can't. The email reads like 
 
 Not a service. **Proof that he can help.** Every email is quietly auditioning for one thing: let me show you I can actually help you. The email's job is to earn belief, not book a call. The call is downstream. Belief is the product.
 
+## The trust rule
+
+If the reader smells a sale before trust is earned, it is dead on arrival. The instinct to remove pressure is correct, but it shows up as soft exits ("no pressure," "no worries if not") which we never write. Keep the intent, kill the phrase. Zero pressure comes from tone, not a disclaimer.
+
+## Peer, never above or below
+
+From one business owner to another. Same trenches. Never the expert who found your mistake — the peer who'd hate to see good work go underappreciated. Speak for the audience too: "this is probably what other parents feel." Borrow the reader's own audience to make the point land. It is not his opinion, it is their customers' experience.
+
 ## The register
 
 - Like talking to someone who knows him. Seamless, no bumps, no act.

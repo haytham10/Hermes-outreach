@@ -58,7 +58,8 @@ If already in Notion, fetch with `mcp__notion__API_retrieve_page_markdown`.
 The slug must be computed the same way the crawler does it, so IG screenshots and crawl screenshots land in the same folder. A hand-guessed slug is what put a real lead's IG evidence in `evidence/momhoodmentor/ig/` while the crawl wrote to `evidence/lynsey-ward/` — two different directories the vision gate can't reconcile.
 
 ```bash
-cd ~/projects/Funnel-Auditor
+FUNNEL_AUDITOR_HOME="${FUNNEL_AUDITOR_HOME:-$HOME/projects/Funnel-Auditor}"
+cd "$FUNNEL_AUDITOR_HOME"
 HERMES_VENV="${HERMES_HOME:-$HOME/.hermes}/hermes-agent/venv"
 PYTHON="$HERMES_VENV/Scripts/python"
 # Use the contact name; falls back to handle or URL if no name yet
@@ -200,9 +201,29 @@ auxiliary:
 - **Attempt 2**: If attempt 1 was unclear, try a different approach (zoom in, scroll to a different part of the page, or use browser_snapshot/browser_console to read the DOM directly).
 - **Attempt 3+**: If DOM inspection also fails, report "price not machine-readable" and mark it for manual review. NEVER state a specific dollar amount unless you have actually read it clearly from the page source (DOM text content, not vision). **A confidently wrong number is worse than no number.**
 
+### Step 2.6 — The Floor (added Jul 2, 2026, from pipeline evidence)
+
+Gate 0 (sourcing) is supposed to screen leads before they ever reach this pipeline, but the rows prove it doesn't always happen, so the walk enforces a minimum before any touches get spent.
+
+**Audience floor:** roughly 1K followers or an equivalent real audience signal (podcast, list, active community). Receipt: Blanka Kellermayer, 115 followers, burned three touches on an account that cannot pay even the smallest price point.
+
+**Activity floor:** last post or visible activity within ~3 weeks. Check this against a live web search on the lead's name, not secondhand notes — the search is what actually tells you if she posted recently. Receipt: Lisa Chan, 7 weeks silent, correctly parked, but only because the user caught it by instinct. Now it's a rule, and it's verifiable directly instead of trusted on faith.
+
+**Niche floor:** parenting or faith-based, genuinely. Adjacent wellness niches without the case-study fit get parked. Receipt: Gayu Lewis, menopause coach, her own row said "not parenting" and she got three touches anyway.
+
+Failing the floor means Lane 3, reason noted, stop — don't proceed to Gate 1 or the filters below. The floor exists to protect touches, which are the scarcest resource in a crisis.
+
+### Step 2.7 — Gate 1 Check (2 seconds)
+
+One question only: is there a team or gatekeeper between the user and the owner?
+
+Signs: "our team," a named co-creator running ops, a verified mega-account (150K+) with a manager triaging DMs.
+
+If yes, classify as Lane 3: Skip, note the reason as "gatekeeper/team," write to Notion, and stop. If no or unclear, proceed to Step 3.
+
 ### Step 3 — Apply Filters & Determine Lane
 
-**Do not start this step until Step 2.5's `vision check` printed `VISION PASS: COMPLETE`** (or you've logged the unreadable-image exception). Pass that literal line into the lane analysis — it will be part of the final verdict.
+**Do not start this step until Step 2.5's `vision check` printed `VISION PASS: COMPLETE`** (or you've logged the unreadable-image exception) and the lead has cleared the floor (Step 2.6) and Gate 1 (Step 2.7). Pass that literal line into the lane analysis — it will be part of the final verdict.
 
 **Sting test:** Would she FEEL this if you named it, or shrug?
 **Vitamin filter:** Is this a FELT COST or a MECHANISM she lacks?
@@ -231,10 +252,9 @@ Stop X — [what's there] — [what it means]
 (Skip clean unremarkable stops)
 
 ## Evidence
-**IG evidence:** [paste the literal `python main.py vision check evidence/<slug>` output for ig/ images, e.g. "VISION PASS: COMPLETE — 4 of 4 required images confirmed read"] OR "none attached — site-only walk"
-**Site vision pass:** [paste the literal `vision check` output for site screenshots] OR the same INCOMPLETE-with-detail treatment
-**Machine flags confirmed:** [verified finding] OR "none — all rejected"
-**Machine flags rejected:** [N — one-phrase reason each] OR "none rejected"
+**IG evidence:** [paste the literal `python main.py vision check evidence/<slug>` output for ig/ images, e.g. "VISION PASS: COMPLETE — 4 of 4 required images confirmed read"] OR "none attached — site-only walk". If the line says INCOMPLETE, write INCOMPLETE, plus which paths, plus the reason if known — do not round up to "read."
+**Site vision pass:** [paste the literal `vision check` output for site screenshots] OR the same INCOMPLETE-with-detail treatment.
+**Machine flags rejected in the vision pass:** [N — one-phrase reason each] OR "none rejected"
 
 ## Gate 1
 Solo-operator signals or gatekeeper flags.

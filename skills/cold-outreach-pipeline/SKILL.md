@@ -17,17 +17,19 @@ End-to-end pipeline management for cold email outreach. Notion is the single sou
 
 - **CRM/state**: Notion (Lead Pipeline database, page bodies for audit logs and email threads)
 - **Email drafts**: Himalaya CLI → `template save --folder Drafts`
-- **Funnel crawling**: browser tools (browser_navigate, browser_snapshot, browser_console) or Funnel Auditor repo (`~/projects/Funnel-Auditor`)
+- **Funnel crawling**: browser tools (browser_navigate, browser_snapshot, browser_console) or the Funnel Auditor repo (`$FUNNEL_AUDITOR_HOME`, defaults to `~/projects/Funnel-Auditor`)
 - **Orchestration**: Hermes Agent (skills + cron jobs for scheduled workers)
 
 ## Skills Map (which skill owns what)
 
 | Task | Skill | When |
 |---|---|---|
-| Daily ops: replies, follow-ups, send queue, hygiene | **pipeline-tick** | Every morning (cron or manual) |
-| Email drafting (all types) | **haytham-email-draft** | Whenever a draft is needed |
-| Single-lead audit: walk → findings → opener → draft | **funnel-audit-session** | Per-lead processing |
-| Batch audit: process all Researching leads | **pipeline-tick** (or funnel-audit-session loop) | After sourcing sessions |
+| Daily ops: replies, follow-ups, send queue, hygiene | **pipeline-tick** (this repo) | Every morning (cron or manual) |
+| Email drafting (all types) | **haytham-email-draft** (this repo) | Whenever a draft is needed |
+| Single-lead audit: walk → findings → opener → draft | **funnel-audit-session** (this repo) | Per-lead processing, manual/single-paste trigger |
+| Batch audit: process all Researching leads | **batch-audit** (Funnel-Auditor's own skill, see note below) | Scheduled lead-queue Routine in Funnel-Auditor, or "work the queue" |
+
+**Note on Funnel-Auditor's own skills:** `$FUNNEL_AUDITOR_HOME` (defaults to `~/projects/Funnel-Auditor`) is not just the crawler CLI listed under Tech Stack above — its `.claude/skills/` directory runs its OWN independently-maintained pipeline: `batch-audit` (the queue orchestrator that fetches Researching rows and spawns one `lead-processor` subagent per lead, ~3 in parallel, cap 15), `process-lead` (the single-lead contract), the `lead-processor` agent, `haytham-opener-finder`, and `haytham-funnel-auditor`. It also carries its own copies of `haytham-email-draft` and `pipeline-tick` that have organically diverged from this repo's versions — they are NOT the same skills as the ones in this repo's Skills Map. Reconciling the two repos periodically (an alignment pass like this one) is expected ongoing maintenance, not a one-time sync.
 
 ## Notion Workspace — Reliable Docs
 
@@ -76,7 +78,7 @@ Never treat chat memory as pipeline state — always read Notion.
 Use the **funnel-audit-session** skill. Quick reference:
 
 1. Fetch the lead page from Notion
-2. Crawl their website using browser tools or `python ~/projects/Funnel-Auditor/main.py walk <url>`
+2. Crawl their website using browser tools or `python $FUNNEL_AUDITOR_HOME/main.py walk <url>` (`$FUNNEL_AUDITOR_HOME` defaults to `~/projects/Funnel-Auditor`)
 3. Run the 5-stop funnel walk (from The Bible): bio link → freebie → offer/sales page → checkout → audience ownership
 4. Apply the two filters: sting test and vitamin filter
 5. Determine Lane (1/2/3) and Finding Type
@@ -86,9 +88,9 @@ Use the **funnel-audit-session** skill. Quick reference:
 9. Create Gmail draft via Himalaya
 10. Update properties after user confirms send
 
-### 2. Audit Queue Worker (daily cron)
+### 2. Audit Queue Worker (implemented — lives in Funnel-Auditor, not here)
 
-Set up as a cron job using the **pipeline-tick** skill. Scans for leads still in Researching and processes them — same as workflow 1 but unmanned.
+This is not a worker to build in this repo. It's already implemented as Funnel-Auditor's `batch-audit` skill (`$FUNNEL_AUDITOR_HOME`, defaults to `~/projects/Funnel-Auditor`), fired by a scheduled Routine in that repo: it queries the Lead Pipeline for Researching rows and spawns one `lead-processor` subagent per lead (~3 in parallel, cap 15), each running the full walk → vision pass → floors → opener-finder → Notion write → email address → Gmail draft flow. Neither **funnel-audit-session** nor **pipeline-tick** in this repo owns this worker.
 
 ### 3. Daily Pipeline Tick (cron or manual)
 

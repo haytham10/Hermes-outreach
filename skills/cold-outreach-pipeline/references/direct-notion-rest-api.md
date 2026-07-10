@@ -5,10 +5,13 @@ When Notion MCP tools aren't available in-session (e.g. MCP tool naming mismatch
 ## Setup
 
 ```python
-import json, re, requests
+import json, os, re, requests
 
 # Read token from Hermes config
-CONFIG_PATH = r"C:\Users\cnara\AppData\Local\hermes\config.yaml"
+CONFIG_PATH = os.path.join(
+    os.environ.get("LOCALAPPDATA", os.path.expanduser("~/.hermes")),
+    "hermes", "config.yaml",
+)
 with open(CONFIG_PATH, "r") as f:
     content = f.read()
 m = re.search(r"NOTION_TOKEN:\s*(\S+)", content)

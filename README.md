@@ -28,13 +28,21 @@ Your cold email outreach system running on Hermes Agent.
 │   ├── git-recovery/               # Git stash recovery & surgery
 │   └── project-bootstrapping/      # Pre-first-commit safety
 │
-~/projects/Funnel-Auditor/          # Crawler repo
+~/projects/Funnel-Auditor/          # Crawler repo (path override: $FUNNEL_AUDITOR_HOME)
 ├── main.py                         # CLI: walk / crawl
 ├── audit/                          # Crawler + checks
 ├── config.py                       # Funnel keywords, noise domains
-├── .claude/skills/                 # Original Claude skills (reference only)
+├── .claude/skills/                 # OWN live, independently-run pipeline (batch-audit,
+│                                    # process-lead, lead-processor agent, haytham-opener-finder,
+│                                    # haytham-funnel-auditor) — NOT reference-only, and NOT the
+│                                    # same as this repo's skills of the same name. See
+│                                    # skills/cold-outreach-pipeline/SKILL.md's Skills Map note.
 └── CLAUDE.md                       # System overview
 ```
+
+Funnel-Auditor's skills have organically diverged from this repo's (its own copies of
+`haytham-email-draft` and `pipeline-tick` in particular) — reconciling the two repos
+periodically is expected ongoing maintenance, not a one-time sync.
 
 ## Tools
 
@@ -62,7 +70,7 @@ Your cold email outreach system running on Hermes Agent.
 | Job | Schedule | Purpose |
 |---|---|---|
 | **Daily Pipeline Tick** | Every morning | Reply detection, due follow-ups, send queue, hygiene flags |
-| **Audit Queue Worker** | TBD | Process Researching leads through funnel-audit-session |
+| **Audit Queue Worker** | Implemented — lives in Funnel-Auditor | The Researching-queue worker already exists: Funnel-Auditor's `batch-audit` skill, fired by a scheduled Routine in that repo (not this one, and not via funnel-audit-session or pipeline-tick) |
 
 ## Delegation Rules (see AGENTS.md for full table)
 
