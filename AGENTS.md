@@ -40,6 +40,9 @@ Always query the pipeline fresh. Never trust previous-turn state for Touch #, St
 ### 8. Verbatim bodies or nothing
 Never use placeholder text like "[Body content not retrieved from Gmail]". Use Gmail API to get the actual sent body. If you can't retrieve it, flag the lead and move on — don't fabricate.
 
+### 9. Skill creation disclosure (standing rule)
+Any time I (the agent) create a new Hermes skill that is outreach-related — touching the lead pipeline, email drafts, funnel audits, Notion CRM, or the cold-outreach workflow — I MUST explicitly flag it to Haytham in the same message where it's created. I will say what the skill does, why I created it, and that it's now available. This covers both skills created at Haytham's direction and skills I create on my own initiative. Non-outreach skills (git, bootstrapping, general-purpose tooling) do not need disclosure unless they become relevant to outreach operations.
+
 ## Key File Paths (read each at most ONCE per session, on first need — never per lead)
 
 Do not preload these. Read a doc the first time the session actually needs it; after that it stays in context — do NOT re-read it per lead.

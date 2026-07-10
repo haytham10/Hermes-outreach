@@ -18,7 +18,16 @@ Your cold email outreach system running on Hermes Agent.
 │
 ├── cached-evidences/               # Crawler output (per lead)
 ├── scripts/                        # Helper scripts
-
+│   └── setup-skills.sh             # Junction setup for fresh clones
+│
+├── skills/                         # Hermes skills (source of truth — junctioned into AppData)
+│   ├── funnel-audit-session/       # Per-lead pipeline: walk → findings → opener → draft
+│   ├── cold-outreach-pipeline/     # Architecture overview
+│   ├── haytham-email-draft/        # Voice-guided email drafting
+│   ├── pipeline-tick/              # Daily ops loop
+│   ├── git-recovery/               # Git stash recovery & surgery
+│   └── project-bootstrapping/      # Pre-first-commit safety
+│
 ~/projects/Funnel-Auditor/          # Crawler repo
 ├── main.py                         # CLI: walk / crawl
 ├── audit/                          # Crawler + checks
@@ -37,14 +46,16 @@ Your cold email outreach system running on Hermes Agent.
 | **Playwright** | ✅ Installed | Chromium browser for crawling |
 | **Gmail API** | ✅ Live | Reply detection + verbatim body retrieval |
 
-## Skills (all created ✅)
+## Skills (repo-managed — all junctioned into AppData)
 
 | Skill | Purpose | Delegation-safe? |
 |---|---|---|
-| **pipeline-tick** | Daily ops: reply detection, due follow-ups, send queue, hygiene, manual sync | Partial — body writes are parent-only |
-| **haytham-email-draft** | Voice + silent gate loop + all email types + Gmail drafts | Partial — draft text can be delegated, final gate + himalaya is parent-only |
 | **funnel-audit-session** | Single-lead: intake → walk → findings → opener → draft | Partial — crawling/analysis OK, Notion writes + Gmail drafts are parent-only |
 | **cold-outreach-pipeline** | Architecture overview + session start workflow | N/A — reference skill |
+| **haytham-email-draft** | Voice + silent gate loop + all email types + Gmail drafts | Partial — draft text can be delegated, final gate + himalaya is parent-only |
+| **pipeline-tick** | Daily ops: reply detection, due follow-ups, send queue, hygiene, manual sync | Partial — body writes are parent-only |
+| **git-recovery** | Git stash recovery, merge safety, dangling commit inspection | N/A — reference skill |
+| **project-bootstrapping** | Pre-first-commit safety, credential scanning, .gitignore design | N/A — reference skill |
 
 ## Cron Jobs
 
@@ -74,6 +85,34 @@ Set in Hermes `config.yaml` (AppData/Local/hermes) on 2026-07-10:
 - `skills.disabled` hides ~66 bundled skills irrelevant to outreach from the per-request skills index. Re-enable via `hermes skills`.
 - `model.max_tokens: 8192` caps output (unset = 65,536 reserved per request, which 402s at low OpenRouter balances).
 - `tool_loop_guardrails.hard_stop_enabled: true` stops repeated identical tool failures from burning full-context retries.
+
+## Fresh Clone Setup
+
+On a new machine, after cloning this repo:
+
+```bash
+# 1. Link skills into Hermes (creates Windows directory junctions)
+#     so AppData points at the repo files.
+bash scripts/setup-skills.sh
+
+# 2. Verify skills are visible
+hermes skills list
+```
+
+The script creates directory junctions (`mklink /J`) from `~/.hermes/skills/` into `skills/` in this repo. No admin rights needed. The repo is the source of truth — Hermes reads through the junction transparently.
+
+**What junctions are created:**
+
+| Junction in AppData | → | Repo path |
+|---|---|---|
+| `~/.hermes/skills/funnel-audit-session/` | → | `skills/funnel-audit-session/` |
+| `~/.hermes/skills/productivity/cold-outreach-pipeline/` | → | `skills/cold-outreach-pipeline/` |
+| `~/.hermes/skills/software-development/haytham-email-draft/` | → | `skills/haytham-email-draft/` |
+| `~/.hermes/skills/software-development/pipeline-tick/` | → | `skills/pipeline-tick/` |
+| `~/.hermes/skills/software-development/git-recovery/` | → | `skills/git-recovery/` |
+| `~/.hermes/skills/software-development/project-bootstrapping/` | → | `skills/project-bootstrapping/` |
+
+**To update a skill:** edit the files in `skills/<name>/` in the repo, commit, push. The junction means Hermes sees the changes immediately — no re-install, no reload needed (though `/reload-skills` may be needed mid-session).
 
 ## Quick Start
 
