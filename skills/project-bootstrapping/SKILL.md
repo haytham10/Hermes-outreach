@@ -8,7 +8,7 @@ tags: [git, init, bootstrapping, credentials, secrets, .gitignore, security]
 
 Initialize a git repo for an existing project without accidentally committing credentials, hardcoded local paths, or sensitive directories.
 
-**Use when:** you're about to `git init` in a directory that already has files — especially config dirs, credential files, or scripts with machine-specific paths.
+**Use when:** you're about to `git init` in a directory that already has files — especially config dirs, credential files, or scripts with machine-specific paths. Also use when cloning an existing project that ships Hermes skills in a `skills/` directory — run the post-clone step to link them into AppData.
 
 ## 1. Assess What Exists
 
@@ -209,6 +209,74 @@ else:
 ```
 
 Run with: `python3 <tempfile-path>/hermes-verify-bootstrap.py`
+
+## 9. Post-Clone: Link Hermes Skills from Repo
+
+When a project ships Hermes skills under `skills/<name>/` in the repo, they need to be linked into Hermes's AppData directory so the agent can load them. The repo is the source of truth — local Hermes reads through a directory junction (Windows) or symlink (Linux/Mac).
+
+### How it works
+
+- Skills live in `skills/<name>/SKILL.md` in the repo, optionally with `references/` and `scripts/` subdirectories.
+- A **directory junction** (Windows `mklink /J`) or **symlink** (Linux `ln -s`) maps `~/.hermes/skills/<name>/` → `repo/skills/<name>/`.
+- Hermes loads skills by scanning `~/.hermes/skills/` subdirectories — a junction is transparent; Hermes can't tell it's a link.
+- Edit the repo file, commit, push. The junction means Hermes sees changes immediately (though a `/reload-skills` mid-session may be needed).
+
+### On Windows (PowerShell junction)
+
+```powershell
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.hermes\skills\<name>" -Target "C:\path\to\repo\skills\<name>"
+```
+
+No admin rights needed. Use a `scripts/setup-skills.sh` that iterates the skill list and creates each junction — that way the clone procedure is one command.
+
+### On Linux/Mac (symlink)
+
+```bash
+ln -sf "$(pwd)/skills/<name>" ~/.hermes/skills/<name>
+```
+
+### Setup script pattern
+
+```bash
+# scripts/setup-skills.sh
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+HERMES_SKILLS="${HERMES_HOME:-$HOME/.hermes}/skills"
+
+junction() {
+  local name="$1" category="$2"
+  local target="$REPO_ROOT/skills/$name"
+  local linkto="$HERMES_SKILLS"
+  [ -n "$category" ] && linkto="$linkto/$category"
+  linkto="$linkto/$name"
+  [ -d "$linkto" ] && [ ! -L "$linkto" ] && rm -rf "$linkto"
+  # Windows
+  powershell.exe -Command "New-Item -ItemType Junction ..." 2>/dev/null ||
+  # Linux/Mac
+  ln -sf "$target" "$linkto"
+}
+```
+
+### Verification
+
+After linking, confirm the skill loads:
+
+```bash
+# List skills (should show the linked one)
+hermes skills list
+
+# Or check from Python
+python3 -c "
+import os; p = os.path.expanduser('~/.hermes/skills/<name>/SKILL.md');
+print('OK' if os.path.isfile(p) else 'MISSING')
+"
+```
+
+### Pitfalls
+
+- **MSYS path mangling on Windows.** Git-bash converts `/c/Users/...` paths when passing to native Windows tools. Pass paths through `powershell.exe -Command` with double-quoted Windows-native paths, or `cd` to the target directory first.
+- **Don't junction a directory that already has real files** — the junction overlay hides them. Remove the real directory first.
+- **Symlinks don't survive `git clone` on Windows** unless `core.symlinks=true` is set in git config. The junction itself is not tracked by git — create it as a setup step.
+- **On Linux/Mac, ensure the symlink target path is absolute** or relative from the link's parent directory, not from cwd — shell scripts should compute the full path.
 
 ## Pitfalls
 

@@ -159,6 +159,7 @@ See `AGENTS.md` at the project root for the full delegation boundaries table. Qu
 
 ### Funnel Auditor CLI
 - **Windows: greenlet._greenlet ModuleNotFoundError**: The Funnel Auditor CLI (`python main.py walk ...`) imports playwright which depends on the `greenlet` C extension. On Windows with mixed Python installs (e.g. Python3.11 system-wide but Hermes venv Python3.13), the greenlet binary loads from the wrong venv and crashes. Default to browser-tool fallback immediately — do not debug greenlet versions mid-session.
+- **CLI timeout on URLs**: A hanging CLI (no output for 60+ seconds) is rarely a missing browser. The crawler's `_goto_with_fallback()` already handles `networkidle` hangs. A timeout is almost always the target URL itself (heavy JS, chat widgets, long-polling) or a bash-level timeout. Diagnose by testing with `python main.py crawl example.com` first — if that works, increase the terminal timeout or fall through to the browser-tool fallback. If example.com also fails, run `python -m playwright install --list` to confirm Chromium is installed at its `ms-playwright` path.
 
 ### Notion
 - **MCP tool naming mismatch**: The Notion MCP server exposes tools with hyphens (`API-query-data-source`), but the default config may have underscores (`API_query_data_source`). If a session loads and MCP tools don't appear as available, check `config.yaml` `mcp_servers.notion.tools.include` — tool names must use hyphens. Fix with `hermes mcp configure notion` (interactive) or edit the config. Requires `/reload-mcp` or a new session to take effect.
