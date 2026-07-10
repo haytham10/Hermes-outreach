@@ -88,9 +88,12 @@ No images attached → proceed site-only, carry the flag "IG evidence: none atta
 
 #### 2c — Run the crawl
 
+**IMPORTANT: Set the terminal timeout to 300s.** A full walk (up to 16 pages + checkout hops) takes 45-90s on a light site, but heavy JS sites (Kajabi, Teachable, analytics-heavy blogs) can take 120-200s. The default 180s terminal timeout will kill the crawl mid-page on heavier sites, producing a partial evidence packet with missing screenshots. The CLI now prints per-page progress to stderr (`crawl: [1] crawling sales: ...`) so you can see activity during the run.
+
 ```bash
 $PYTHON main.py walk <site-url> --name "<name>" --handle "<handle>" --followers <N> --out evidence/$SLUG
 ```
+Run this with `timeout=300` in the terminal call.
 
 The `--out evidence/$SLUG` argument is **required** — it guarantees the IG screenshots (from 2b) and the crawl's own screenshots end up in the same folder. Without it, they diverge and the vision gate can't reconcile them.
 
@@ -107,7 +110,7 @@ Produces:
 
 If the CLI still fails (e.g. Playwright browser not installed), skip it immediately and fall through to the browser-tool fallback below. Do NOT debug greenlet versions mid-session.
 
-**PITFALL — CLI timeout on target URLs.** If `python main.py walk <url>` hangs (no output for 60+ seconds), the root cause is rarely a missing Playwright/Chromium. The crawler's `_goto_with_fallback()` already handles `networkidle` hangs by falling back to `domcontentloaded`. A genuine timeout is almost always the target URL itself (heavy JS, chat widgets, long-polling analytics, infinite scroll) or a bash-level timeout on the command.
+**PITFALL — CLI timeout on target URLs.** If `python main.py walk <url>` hangs, the root cause is rarely a missing Playwright/Chromium. The crawler's `_goto_with_fallback()` already handles `networkidle` hangs by falling back to `domcontentloaded`. A genuine timeout is almost always the terminal timeout being too low (default 180s is not enough for 16-page crawls on heavy sites — always use `timeout=300`), or the target URL itself (heavy JS, chat widgets, long-polling analytics, infinite scroll). The CLI prints per-page progress to stderr so you can see where it is during the run.
 
 **Quick one-pass diagnosis:**
 1. Verify Playwright + Chromium are functional by writing a temp script to `C:\Users\...\AppData\Local\Temp\` that launches headless Chromium and navigates to `example.com`, then deleting it. (The `-c` inline flag is blocked by Hermes' approval guard — always use a temp file for `python -c`-equivalent checks on this host.)
@@ -250,6 +253,8 @@ If Lane 1, also identify:
 
 ### Step 4 — Write the Audit to Notion
 
+**MCP FIRST:** Always use `mcp__notion__API_update_page_markdown` for body writes and `mcp__notion__API_patch_page` for property updates. Only fall back to the REST API (block-level) if MCP tools are genuinely unavailable in this session — and say why in the chat writeup.
+
 Use `mcp__notion__API_update_page_markdown` with `type="replace_content"`. The page body format:
 
 ```markdown
@@ -359,7 +364,9 @@ Step 2 (funnel walk) defaults to running the CLI directly in the main session. O
 | Notion patch shapes | `references/notion-patch-page-shapes.md` | Only when a property patch fails | On demand |
 | Notion REST API body write | `references/notion-rest-api-body-write.md` | When MCP Notion tools aren't in-session | Delete-all + batch-append blocks via REST API, plus property patch differences vs MCP |
 | Browser fallback techniques | `references/browser-fallback-techniques.md` | When CLI fails and browser fallback is used | Console-based page text extraction, hidden checkout URL discovery, URL verification |
-| CLI smoke test | `references/cli-smoke-test.md` | After pull, Playwright upgrade, greenlet error, or before a real lead walk | One-command `crawl example.com` to verify screenshot capture is healthy |
+| Email finding techniques | `references/email-finding-techniques.md` | When the lead's email is unknown (opener-finder phase) | Psychology Today profiles (email hidden behind relay), MX record analysis, Kajabi pitfalls, search engine blocking patterns, plus basic scan techniques |
+| CLI smoke test | `references/cli-smoke-test.md` | After pull, Playwright upgrade, greenlet error, or before a real lead walk | One-command `crawl example.com` to verify screenshot capture is healthy. Includes post-optimization timing baselines for regression detection |
+| CLI performance profiling | `references/cli-performance-profiling.md` | When a walk is slow or times out and the smoke test passes | Profiling script, per-page time breakdown, root-cause catalog of the 3 major time sinks (mobile reload, CTA re-navigation, redundant embed waits), regression checklist |
 | Direct Notion REST API (external) | `cold-outreach-pipeline skill → references/direct-notion-rest-api.md` | For general REST API reference | Broader coverage of Notion API endpoints |
 
 **IMPORTANT:** Each doc is read at most ONCE per session, on first need — never preloaded in bulk, never re-read per lead. If you've processed one lead in this session, the docs you used are already in your active context. Gate checks are plain text reasoning — never execute_code, never a script.

@@ -54,7 +54,11 @@ These are the only current framework docs. **Never fetch them from Notion** — 
 Database ID: `78b26ebe-5b4f-4ff2-884a-3ccf369d00e6`
 Data source ID: `c6209e29-55ef-4781-b735-73b2a254e34f`
 
-**WARNING:** These are different IDs. The data source ID (`collection://c6209e29-...`) is used by the Notion MCP `API_query_data_source` tool. The database ID (`78b26ebe-...`) is what the Notion REST API v1 expects for `/v1/databases/{id}/query`. If the MCP tools aren't available in-session (e.g. MCP naming mismatch, session not reloaded after config change), use the database ID with the direct REST API. To discover the real DB ID, search Notion: `POST /v1/search {filter: {value: "database", property: "object"}}` — the `Lead Pipeline` title gives the canonical database ID.
+**WARNING:** These are different IDs. The data source ID (`collection://c6209e29-...`) is used by the Notion MCP `API_query_data_source` tool. The database ID (`78b26ebe-...`) is what the Notion REST API v1 expects for `/v1/databases/{id}/query`.
+
+**MCP is the default.** Always call `mcp__notion__*` tools first for every Notion operation (query, patch, read/write pages). Only use the direct REST API when MCP tools are genuinely unavailable in-session — and articulate the reason. The REST API path is documented in `references/direct-notion-rest-api.md` and the block-level body write recipe in `funnel-audit-session`'s `references/notion-rest-api-body-write.md`.
+
+To discover the real DB ID, search Notion: `POST /v1/search {filter: {value: "database", property: "object"}}` — the `Lead Pipeline` title gives the canonical database ID.
 
 Key fields: Status, Tier, Lane, Sequence, Touch #, Next Action, Last Contacted, Email, Finding Type, Niche, Platform, Est. Value, Lost Reason.
 
@@ -78,7 +82,7 @@ Never treat chat memory as pipeline state — always read Notion.
 Use the **funnel-audit-session** skill. Quick reference:
 
 1. Fetch the lead page from Notion
-2. Crawl their website using browser tools or `python $FUNNEL_AUDITOR_HOME/main.py walk <url>` (`$FUNNEL_AUDITOR_HOME` defaults to `~/projects/Funnel-Auditor`)
+2. Crawl their website using browser tools or `python $FUNNEL_AUDITOR_HOME/main.py walk <url>` (`$FUNNEL_AUDITOR_HOME` defaults to `~/projects/Funnel-Auditor`). **Set terminal timeout=300** — the default 180s kills crawls on heavy JS sites mid-page.
 3. Run the 5-stop funnel walk (from The Bible): bio link → freebie → offer/sales page → checkout → audience ownership
 4. Apply the two filters: sting test and vitamin filter
 5. Determine Lane (1/2/3) and Finding Type
@@ -143,8 +147,10 @@ From Grand Slam Offer v2:
 
 See `AGENTS.md` at the project root for the full delegation boundaries table. Quick summary:
 
-- ✅ **Can delegate**: funnel walking, lane/finding analysis, email drafting (return text to parent), property-only Notion updates, Gmail reply detection
+- ✅ **Can delegate**: funnel walking, lane/finding analysis, email drafting (return text to parent), **email finding for leads** (search sites for contact info, return found email or NOT FOUND, cap 3 parallel), property-only Notion updates, Gmail reply detection
 - ❌ **Never delegate**: Notion page body writes, Email Thread Log appends, Gmail draft creation (himalaya), final gate checks on drafts
+
+When delegating email finding, give each subagent: the lead name, site URL, and a note to check the privacy policy (high yield for Kajabi). Update Notion as soon as each result returns — don't batch-hold updates. See `references/finding-email-addresses.md` for the full search checklist subagents should follow.
 
 **Important change from v1:** Funnel walks now default to running the CLI directly in the main session (not delegated to a subagent). Only delegate for parallel batch work (3+ sites at once). See funnel-audit-session skill for details.
 
@@ -159,9 +165,10 @@ See `AGENTS.md` at the project root for the full delegation boundaries table. Qu
 
 ### Funnel Auditor CLI
 - **Windows: greenlet._greenlet ModuleNotFoundError**: The Funnel Auditor CLI (`python main.py walk ...`) imports playwright which depends on the `greenlet` C extension. On Windows with mixed Python installs (e.g. Python3.11 system-wide but Hermes venv Python3.13), the greenlet binary loads from the wrong venv and crashes. Default to browser-tool fallback immediately — do not debug greenlet versions mid-session.
-- **CLI timeout on URLs**: A hanging CLI (no output for 60+ seconds) is rarely a missing browser. The crawler's `_goto_with_fallback()` already handles `networkidle` hangs. A timeout is almost always the target URL itself (heavy JS, chat widgets, long-polling) or a bash-level timeout. Diagnose by testing with `python main.py crawl example.com` first — if that works, increase the terminal timeout or fall through to the browser-tool fallback. If example.com also fails, run `python -m playwright install --list` to confirm Chromium is installed at its `ms-playwright` path.
+- **CLI timeout on URLs**: A hanging CLI is rarely a missing browser. The crawler's `_goto_with_fallback()` already handles `networkidle` hangs. A timeout is almost always the terminal timeout being too low (default 180s is not enough for 16-page crawls on heavy sites — always use `timeout=300`), or the target URL itself (heavy JS, chat widgets, long-polling). The CLI now prints per-page progress to stderr so you can see where it is. Diagnose by testing with `python main.py crawl example.com` first — if that works, increase the terminal timeout or fall through to the browser-tool fallback. If example.com also fails, run `python -m playwright install --list` to confirm Chromium is installed at its `ms-playwright` path.
 
 ### Notion
+- **MCP-first rule**: `mcp__notion__*` tools are the default for every Notion operation. Only fall back to the direct REST API if MCP tools are genuinely unavailable in this session and you can articulate the reason. This is a deliberate choice, not a habit.
 - **MCP tool naming mismatch**: The Notion MCP server exposes tools with hyphens (`API-query-data-source`), but the default config may have underscores (`API_query_data_source`). If a session loads and MCP tools don't appear as available, check `config.yaml` `mcp_servers.notion.tools.include` — tool names must use hyphens. Fix with `hermes mcp configure notion` (interactive) or edit the config. Requires `/reload-mcp` or a new session to take effect.
 - **Database ID ≠ data source ID**: The data source ID (`c6209e29-...`) is a `collection://` identifier used by `API_query_data_source`. The actual database ID on the Notion REST API is `78b26ebe-...`. When working outside MCP (direct REST calls), always use the database ID. Discover via `POST /v1/search` filtered to databases.
 - **Direct REST API reference**: See `references/direct-notion-rest-api.md` for complete recipes (query, read/append blocks, patch properties) when MCP tools are unavailable. **PITFALL:** `PATCH /v1/pages/{id}/markdown` is MCP-only — calling it against the native Notion REST API returns `400: body.type should be defined`. Use the block-level API for body writes when MCP is not in-session.
@@ -173,3 +180,7 @@ See `AGENTS.md` at the project root for the full delegation boundaries table. Qu
 - **Himalaya folder aliases**: Without correct `folder.aliases.drafts` mapping, `template save --folder Drafts` will fail silently.
 - **July seasonality**: Parenting coach niche — kids home from school, inboxes ignored, launches postponed. Slow weeks are calendar-driven, not a verdict on copy or motion.
 - **Email typo guard**: Check for slight mismatches (e.g. `brightbegginings` vs `brightbeginnings`) when matching sent emails to pipeline leads.
+
+## Finding Contact Information
+
+When a prospect's website only has a contact form, see `references/finding-email-addresses.md` for the systematic approach: multi-engine search strategy, site exploration checklist, social media checks, third-party interview scanning, domain pattern guesses, and verification steps.
