@@ -42,8 +42,9 @@ Stop X — [what's there] — [what it means]
 (Skip clean unremarkable stops)
 
 ## Evidence
-IG evidence: [N screenshots read] OR "none — site-only walk"
-Machine flags rejected: [N — one-word reason each] OR "none rejected"
+IG evidence: [paste the literal `python main.py vision check evidence/<slug>` output covering the ig/ images, e.g. "VISION PASS: COMPLETE — 4 of 4 required images confirmed read"] OR "none attached — site-only walk". If the line says INCOMPLETE, write INCOMPLETE, plus which paths, plus the reason if known — do not round up to "read."
+Site vision pass: [paste the literal `vision check` output covering the site screenshots] OR the same INCOMPLETE-with-detail treatment.
+Machine flags rejected in the vision pass: [N — one-word reason each] OR "none rejected"
 
 ## Gate 1
 Solo-operator signals or gatekeeper flags.

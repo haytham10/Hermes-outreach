@@ -68,6 +68,8 @@ Every winning opener:
 
 **Gate 0 — Where leads come from:** Mine follow-lists of in-niche anchor accounts. Big anchor → mine FOLLOWERS. Mid-size peer → mine FOLLOWING.
 
+**Step 0.5 — The floor (added Jul 2, 2026, from pipeline evidence):** A different check from Gate 0 above — Gate 0 is about sourcing, the floor is a minimum enforced at walk time because the rows prove sourcing doesn't always catch it. Audience floor: roughly 1K followers or an equivalent real audience signal (podcast, list, active community). Receipt: Blanka Kellermayer, 115 followers, three touches burned on an account that can't pay even the smallest price point. Activity floor: last post or visible activity within ~3 weeks, checked against a live search, not secondhand notes. Receipt: Lisa Chan, 7 weeks silent, correctly parked, but only by instinct — now it's a rule. Niche floor: parenting or faith-based, genuinely; adjacent wellness niches without the case-study fit get parked. Receipt: Gayu Lewis, menopause coach, her own row said "not parenting" and got three touches anyway. Failing the floor = Lane 3, reason noted, stop — touches are the scarcest resource in a crisis.
+
 **Gate 1 — Gatekeeper check:** Team/gatekeeper between you and owner? YES → Skip. NO → Proceed.
 
 **The funnel walk (5 stops):**
@@ -76,6 +78,11 @@ Every winning opener:
 3. Offer/sales page — in 10 seconds, can I tell what it is, the price, why I want it?
 4. Checkout — if I tried to pay, would anything stop me?
 5. Audience ownership — if IG vanished, could they reach these people?
+
+**Tier system (per flagged finding):**
+- Tier A — Critical. Blocks conversion entirely. Provably broken. Opener-grade on its own.
+- Tier B — Strong. Real money leaking. Needs some framing but the cost is real and felt.
+- Tier C — Soft. Technically suboptimal, low felt cost. Rarely a Lane 1 opener alone; needs the sting test to survive.
 
 **Master principle:** A leak is any point where attention the coach already earned fails to convert toward money she can see — AND she'd feel the cost if you named it.
 
@@ -87,6 +94,14 @@ Every winning opener:
 - Lane 1 — OPEN: felt leak + committed buyer. Conversion lane.
 - Lane 2 — WARM-UP: committed buyer, no felt leak. Intel lane.
 - Lane 3 — KILL: not a buyer. Park.
+
+**Coherence rule (added Jul 2, 2026):** Lane 3 forces Tier 4 + Status Disqualified. Lane 1 or 2 can never carry Tier 4.
+
+**The opening angle, required companions (added Jul 2, 2026):**
+- Innocent explanation: Lane 1 findings must carry a second line — the plausible non-blame reason the leak exists (calendar might just need a reset, date might be stuck, section might still be loading). Feeds the either/or closing question in the email. No plausible explanation → flag it; the finding may read as an accusation no matter how it's phrased.
+- Hook type label: when an SMYKM hook exists, label it WORK (her framework, content, testimonial, point of view), LIFE (birthday, personal post), or METRIC (numbers she owns).
+
+**Vision-pass gate (added Jul 2, 2026):** `python main.py vision check evidence/<slug>` must print `VISION PASS: COMPLETE` before a walk's findings are used. Machine flags from the crawler are candidates only — a flag that fails visual confirmation on the screenshot is dead and stays dead.
 
 ## The artifact engine
 
