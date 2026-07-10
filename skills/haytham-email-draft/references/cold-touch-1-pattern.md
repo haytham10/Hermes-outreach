@@ -32,19 +32,19 @@ Next [event], [consequence].
 - "Nothing to [verb] for." is the fragment that stops hard — keep it
 - The consequence ("Next launch, clean slate") is the felt cost in human language, not a measurement
 
-### Paragraph 3 — Motivation + open door (1-2 sentences)
-One sentence stating the real motivation. Brief.
-One sentence making the concrete offer. Conditional ("if you want") + visual picture.
+### Paragraph 3 — Close with one question (1 sentence)
+
+One question she can answer in a word or sentence. Tied to the specific finding. No solution pitch. No motivation line. No emotional performance. Just a question that opens the door.
 
 ```
-I couldn't just watch it. If you want, I can show you what I'd put between [place A] and [place B].
+Do you know the [specific thing] is not [working / sending / connected]?
 ```
 
 **Key rules:**
-- "I couldn't just watch it" — "it" is clear from context (the people disappearing). Don't re-explain.
-- The concrete visual ("between the feed and a list") is the picture she can see
-- "If you want" is warm, not demanding
-- "I can show you" is confident, not pushy
+- The question must be answerable in a sentence — yes/no, "I know" / "I did not know"
+- The question is tied to the specific finding, not to scheduling ("do you have time")
+- No solution offer in Touch 1 — help before sell means no build/fix/implement pitch before she replies
+- No motivation line — stating "I could not just watch it" is a kill-list violation ("stuck with me" pattern, performing emotional investment). State what happened, not how you felt watching it
 
 ## What NOT to do (proven failures)
 
@@ -54,9 +54,16 @@ I couldn't just watch it. If you want, I can show you what I'd put between [plac
 | Math breakdown | "Of 11,500, 75 liked it, a few dozen will comment, the other 11,000 are not..." |
 | Formula transition | "The thing that got me though..." |
 | Formula close | "Deliberate, or one of the things that hasn't been built yet?" |
-| Discovery frame | "I noticed your site doesn't have..." / "I went through your site and found..." |
+| Discovery frame | "I noticed your site doesn't have..." / "I went through your site and found..." / "I checked out your..." / "I was looking at your..." |
 | Consultant polish | "The voice carries from the feed to the page, and not many coaches manage that." |
 | Soft exits | "Let me know if you'd like to chat" / "If you're open to it, I'd love to show you..." |
+| Small metric next to big one | Subject = "the broken link on your linktree" while body opens with 37.8K followers. Lead with the strength only. |
+| Two findings stacked | Both linktree 404 AND dead CTA in the same cold opener. One finding per touch. |
+| Stat recitation as admiration | "You've got 37.8K followers, a therapist's training, and a $158 program" — that's inventory, not seeing |
+| Performed emotional investment | "I couldn't just watch it" / "I couldn't just sit around" — these are "stuck with me" variants. State facts, not feelings. |
+| Scheduling close | "Do you have time over the next week or so?" — generic, unanswerable except with a calendar |
+| Solution pitch before reply | "If you want, I can build the part that sends the guide" — selling before helping. Touch 1 closes with a question, not an offer. |
+| Name salutation | "Hi Lynsey," / "Hey Lynsey," at the top of a cold email. Start with the first body sentence directly. |
 
 ## Before submitting
 

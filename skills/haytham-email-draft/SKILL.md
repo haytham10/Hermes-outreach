@@ -99,19 +99,59 @@ The email doc says "Line 1: the finding, stated flatly. No warm-up." The voice d
 - Second sentence: bridge to the finding
 - Example: "Your comment MOTHER posts work for the parents who act that morning. The rest of the 11,500 visit your site though. Nothing to sign up for."
 
-### Motivation must feel real
+### Small metric next to big one (banned)
 
-The voice doc models: "I couldn't just sit around and watch your work go underappreciated." Say WHY you're writing. But keep it brief. "I couldn't just watch it." is enough when context supplies "it" (11,500 people disappearing).
+When contrasting a big number she owns against a small one she owns, never name the small one alongside the big one — not in subject, not in body. Lead with the strength only (the big thing, the admired thing). Let the gap be felt without announcing both numbers side by side.
 
-### The close is an open door, not a bow
+**Violation:** Subject = "the broken link on your linktree" (small thing), body opens with 37.8K followers and a $158 program (big things). The small thing deflates the big thing before the gap is even named.
 
-No "let me know." No "looking forward." No "if you're open to it." A conditional offer with a concrete picture ends the email:
+**Fix:** Lead with the strength. Subject = the thing she's winning at. The gap is felt in the body, not announced stat-to-stat.
 
-Good: "If you want, I can show you what I'd put between the feed and a list."
-Bad: "Let me know if you'd like to chat about this."
-Bad: "If you're open to it, I'd love to show you some ideas."
+### Disguised kill-list patterns
 
-The concrete picture ("between the feed and a list") does the work. The question mark does not need to carry the weight alone.
+The gate checks the *pattern*, not the literal kill-list string. A phrase that functions the same as a banned phrase is banned.
+
+**"I went through your site today"** = the "I came across your profile" pattern with different words. Also "I checked out your site," "I looked at your [page]," "I was looking at your [page]." All banned. State the finding flatly — no discovery frame at all.
+
+**"I could not just watch it"** / **"I could not just sit around"** = the "stuck with me" / "stayed with me" pattern — performing emotional investment instead of stating a fact. Cut it. State what happened, not how you felt watching it.
+
+### Two findings stacked in Touch 1
+
+One finding, one cost, one question — that is non-negotiable for every touch, and it is especially non-negotiable on Touch 1. Pick the single strongest finding and hold the rest for later touches or drop them entirely.
+
+**Fix:** When you have multiple flags (broken CTA, 404 linktree link, non-delivering freebie), choose the one that is the most direct version of the Lane's felt leak. Drop the others.
+
+### Admire must be genuine seeing, not stat recitation
+
+Listing her follower count, credentials, and price is a stat sheet, not admiration. The gate wants you to actually see what she built and feel it before the leak shows up — not justify the pitch with numbers.
+
+**Good:** "Your Real-Life Regulation Guide is exactly the kind of resource parents need. A free download they can actually use." — sees the resource, feels its value.
+
+**Bad:** "You've got 37.8K followers, a therapist's training, and a $158 program shaped by 10 years of clinical work." — inventory, not admiration.
+
+### Close is a real question, not a scheduling ask
+
+"Do you have time over the next week or so?" is a generic scheduling ask the gate exists to kill. Close with a real one-line-answerable question tied to the specific finding.
+
+**Good:** "Do you know the guide is not sending?" — answerable in a word or sentence, tied to the specific thing.
+
+**Bad:** "Do you have time over the next week or so?" — generic, unanswerable except with a calendar.
+
+**Bad:** "Deliberate, or one of the things that has not been built yet?" — formulaic, repeats across emails.
+
+### No solution pitch before reply (help before sell)
+
+On Touch 1, do not offer to build, fix, or implement anything. She has not replied yet. A solution pitch before reply is selling before helping. The close must be a question she can answer in a sentence — not an offer to deliver.
+
+**Good:** "Do you know the guide is not sending?" — question.
+
+**Bad:** "If you want, I can build the part that sends the guide." — solution pitch before she has engaged.
+
+**Bad:** "If you want, I can show you what I'd put between the feed and a list." — offer before relationship.
+
+### No name salutation in cold emails
+
+Cold emails start with the first body sentence directly. No "Hi [Name]," no "Hey [Name]," no name greeting. The SMYKM subject is the hook; the first body sentence elaborates on it. A salutation before that creates dead weight.
 
 ## Logging (only after user says "log this")
 
@@ -126,11 +166,25 @@ Reply: No reply
 Next: [specific next action + specific date]
 ```
 
+**PITFALL — empty paragraph blocks are stripped by Notion.** When using the block-level REST API to append the thread log entry, do NOT insert empty paragraph blocks (`para("")`) between content lines for visual spacing. Notion eliminates paragraph blocks with empty rich_text. Adjacent content paragraphs render with natural spacing. Append the header, body, Reply, and Next lines as consecutive paragraph blocks with no empty spacers between them.
+
 Update ALL properties in one call: Touch # (+1), Sequence (Cold→Warm on first reply), Status (Outreach Sent / Reply Received / Loom Sent / Call Booked / Won / Lost / Dormant), Last Contacted (today), Next Action (depends on touch type).
 
-## Creating Gmail drafts
+## Creating Gmail drafts — final write-back (MANDATORY)
 
-After user approves, create the draft:
+After user approves a final gated draft, you MUST write it to Gmail AND verify it. "Showing the text" and "saving the draft" are two different actions — the workflow does both, in that order, every time.
+
+### Step A — Check for an existing draft to the same address
+
+Before saving, check whether a previous draft to this contact already exists:
+
+```bash
+himalaya envelope list --folder Drafts --page 1 --page-size 50 --output json
+```
+
+If a draft exists, note its ID. You will delete it after the new one is saved (or before, but deleting first leaves a window with zero drafts — safer to save new, then delete old).
+
+### Step B — Save the new draft
 
 ```bash
 cat << 'EOF' | himalaya template save --folder Drafts
@@ -141,6 +195,24 @@ Subject: Subject line
 Body text here.
 EOF
 ```
+
+### Step C — Delete the old draft (if any)
+
+```bash
+himalaya message delete OLD_ID --folder Drafts
+```
+
+### Step D — Verify the live draft matches the approved text
+
+Read the draft back from Gmail and confirm subject + body match the final gate-approved version:
+
+```bash
+himalaya message read NEW_ID --folder Drafts --output json
+```
+
+Compare the output to the final text. If they differ, delete and re-save.
+
+**Do not tell the user the draft is ready until step D confirms a byte-exact match.**
 
 ## What this skill does NOT do
 

@@ -359,6 +359,7 @@ Step 2 (funnel walk) defaults to running the CLI directly in the main session. O
 | Notion patch shapes | `references/notion-patch-page-shapes.md` | Only when a property patch fails | On demand |
 | Notion REST API body write | `references/notion-rest-api-body-write.md` | When MCP Notion tools aren't in-session | Delete-all + batch-append blocks via REST API, plus property patch differences vs MCP |
 | Browser fallback techniques | `references/browser-fallback-techniques.md` | When CLI fails and browser fallback is used | Console-based page text extraction, hidden checkout URL discovery, URL verification |
+| CLI smoke test | `references/cli-smoke-test.md` | After pull, Playwright upgrade, greenlet error, or before a real lead walk | One-command `crawl example.com` to verify screenshot capture is healthy |
 | Direct Notion REST API (external) | `cold-outreach-pipeline skill → references/direct-notion-rest-api.md` | For general REST API reference | Broader coverage of Notion API endpoints |
 
 **IMPORTANT:** Each doc is read at most ONCE per session, on first need — never preloaded in bulk, never re-read per lead. If you've processed one lead in this session, the docs you used are already in your active context. Gate checks are plain text reasoning — never execute_code, never a script.

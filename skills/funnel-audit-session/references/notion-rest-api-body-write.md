@@ -56,6 +56,8 @@ def bullet_block(content):
     }
 ```
 
+**PITFALL — empty paragraph blocks are stripped by Notion.** Do NOT insert `paragraph_block("")` between content lines to create visual spacing. Notion's block renderer eliminates paragraph blocks with empty rich_text. Adjacent paragraph blocks render with natural spacing automatically — consecutive content blocks are visually distinct without empty spacers. This applies most commonly to Email Thread Log entries: append header, body, Reply, and Next lines as consecutive paragraph blocks with no empty blocks between them.
+
 Available block types: `heading_1`, `heading_2`, `heading_3`, `paragraph`, `bulleted_list_item`, `numbered_list_item`, `to_do`, `toggle`, `callout`, `quote`, `divider`, `image`, `video`, `file`, `code`, `table_of_contents`, `column_list`, `embed`, `bookmark`, `equation`.
 
 For the audit body format (headings + paragraphs + bullets), `heading_2`, `heading_3`, `paragraph`, and `bulleted_list_item` cover all the required shapes.
